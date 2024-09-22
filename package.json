@@ -1,0 +1,26 @@
+{
+  "name": "mercaprecios",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "bun src/app.ts",
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.0",
+    "googleapis": "^140.0.0",
+    "pdf-parse": "^1.1.1",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/jest": "^29.5.13",
+    "@types/node": "^20.14.3",
+    "@types/pdf-parse": "^1.1.4",
+    "jest": "^29.7.0"
+  }
+}
