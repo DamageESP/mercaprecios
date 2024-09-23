@@ -1,8 +1,9 @@
-import fs from 'fs'
 import { authenticate, getAuthUrl, getMessages, oauth2Client } from './lib/google'
 import express from 'express'
-import { initializeDatabase, storeToken } from './db'
-import { getProductsFromMessage } from './lib/mercaprecios'
+import { getTicketDataFromMessage } from './lib/mercaprecios'
+import { createShoppingCart, createTokens } from './db'
+import { TicketData } from './types'
+import { mapTicketDataToShoppingCartCreationInput } from './util'
 
 
 const app = express()
@@ -22,9 +23,27 @@ app.get('/oauthcallback', async (req, res) => {
   if (!tokens.access_token || !tokens.refresh_token) {
     return res.status(400).send('Failed to get tokens')
   }
-  storeToken(tokens.access_token, tokens.refresh_token)
+  await createTokens(tokens.access_token, tokens.refresh_token)
   oauth2Client.setCredentials(tokens);
   res.redirect('/messages')
+})
+
+app.get('/downloadProducts', async (req, res) => {
+  try {
+    const messages = await getMessages()
+    const ticketData: TicketData[] = []
+    for (const message of messages) {
+      const ticket = await getTicketDataFromMessage(message)
+      ticketData.push(ticket)
+    }
+    const shoppingCartCreationData = ticketData.map(mapTicketDataToShoppingCartCreationInput)
+    for (const shoppingCart of shoppingCartCreationData) {
+      await createShoppingCart(shoppingCart)
+    }
+    res.json({ message: 'Products downloaded and saved to the database' })
+  } catch (e) {
+    res.status(500).send(e.message)
+  }
 })
 
 app.get('/messages', async (req, res) => {
@@ -33,7 +52,7 @@ app.get('/messages', async (req, res) => {
     const allProducts = []
     let purchaseDate = null
     for (const message of messages) {
-      const { date, products } = await getProductsFromMessage(message)
+      const { date, products } = await getTicketDataFromMessage(message)
       allProducts.push(...products)
       purchaseDate = date
     }
@@ -48,7 +67,6 @@ app.get('/messages', async (req, res) => {
 })
 
 async function initializeApp() {
-  initializeDatabase()
   await authenticate()
 }
 

@@ -1,10 +1,10 @@
 import { google, gmail_v1 } from "googleapis";
-import { getToken } from "../db";
+import { getTokens } from "../db";
 
 // Initialize OAuth2 client - replace placeholders with your credentials
 export const oauth2Client = new google.auth.OAuth2(
-  '',
-  '',
+  process.env.GOOGLE_CLIENT_ID,
+  process.env.GOOGLE_CLIENT_SECRET,
   'http://localhost:3000/oauthcallback'
 );
 
@@ -19,15 +19,17 @@ export function getAuthUrl() {
 
 export async function authenticate() {
   // Check if we have previously stored a token
-  const tokenData = await getToken()
+  const tokenData = await getTokens()
   if (!tokenData) {
     console.log('No token data found')
     return
   }
+  const accessToken = tokenData.find(token => token.name === 'accessToken')?.token
+  const refreshToken = tokenData.find(token => token.name === 'refreshToken')?.token
   // Set credentials for the OAuth2 client
   oauth2Client.setCredentials({
-    access_token: tokenData.accessToken,
-    refresh_token: tokenData.refreshToken
+    access_token: accessToken,
+    refresh_token: refreshToken
   });
 }
 

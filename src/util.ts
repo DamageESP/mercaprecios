@@ -1,4 +1,5 @@
-import { MercaProduct } from "./types";
+import { Prisma } from "@prisma/client";
+import { TicketData, TicketProductRow } from "./types";
 
 export function getDateFromTicketLine(line: string): Date | null {
   // Match the line using regex to extract the date
@@ -17,7 +18,7 @@ export function getDateFromTicketLine(line: string): Date | null {
   return new Date(year, month - 1, day, hour, minute);
 }
 
-export function getProductFromTicketLine(line: string): MercaProduct | null {
+export function getProductFromTicketLine(line: string): TicketProductRow | null {
   // Match the line using regex to extract the quantity, name, price per unit, and total price
   const regex = /^(\d+)([\w\s\.\&áéíóúÁÉÍÓÚñÑüÜ%\+\-çÇ/\?]+)(\d+,\d{2})(\d+,\d{2})?$/;
   const match = line.match(regex);
@@ -37,5 +38,28 @@ export function getProductFromTicketLine(line: string): MercaProduct | null {
     name,
     pricePerUnit,
     priceTotal,
+  };
+}
+
+export function mapTicketDataToShoppingCartCreationInput(ticketData: TicketData): Prisma.ShoppingCartCreateInput {
+  return {
+    date: ticketData.date,
+    Purchase: {
+      create: ticketData.products.map((product) => ({
+        quantity: product.quantity,
+        price: product.priceTotal,
+        Product: {
+          connectOrCreate: {
+            create: {
+              name: product.name,
+              unit: 'piece',
+            },
+            where: {
+              name: product.name,
+            },
+          },
+        },
+      }))
+    },
   };
 }

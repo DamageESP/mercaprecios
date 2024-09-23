@@ -1,8 +1,11 @@
-export interface MercaProduct {
+export interface TicketProductRow {
   name: string
   quantity: number
-  pricePerUnit?: number
+  pricePerUnit: number
   priceTotal: number
 }
 
-export interface TokenData { accessToken: string, refreshToken: string }
+export interface TicketData {
+  date: Date
+  products: TicketProductRow[]
+}

@@ -1,9 +1,9 @@
 import { readFileSync } from "fs"
 import PdfParse from "pdf-parse"
 import { getDateFromTicketLine, getProductFromTicketLine } from "../util"
-import { MercaProduct } from "../types"
+import { TicketProductRow } from "../types"
 
-export function getProductsFromPdf(pdfData: string): MercaProduct[] {
+export function getProductsFromTicket(pdfData: string): TicketProductRow[] {
   const lines = pdfData.split('\n')
   const startingLine = lines.findIndex(line => line.includes("DescripciónP. UnitImporte"))
   const endingLine = lines.findIndex(line => line.includes("TOTAL (€)"))
@@ -11,7 +11,7 @@ export function getProductsFromPdf(pdfData: string): MercaProduct[] {
     throw new Error('Invalid PDF')
   }
   const linesToProcess = lines.slice(startingLine + 1, endingLine)
-  const products: MercaProduct[] = []
+  const products: TicketProductRow[] = []
   for (const line of linesToProcess) {
     const product = getProductFromTicketLine(line)
     if (product) {

@@ -1,38 +1,90 @@
-import sqlite3 from 'sqlite3'
-import { TokenData } from './types';
+import { Prisma, PrismaClient } from '@prisma/client'
+
+const prisma = new PrismaClient()
 
 
-const db = new sqlite3.Database('database.db');
-
-export function initializeDatabase() {
-  db.serialize(() => {
-    db.run('CREATE TABLE IF NOT EXISTS tokens (accessToken TEXT, refreshToken TEXT)')
-    db.run('CREATE TABLE IF NOT EXISTS products (name TEXT, quantity INT, pricePerUnit REAL, priceTotal REAL)')
+export async function getProducts() {
+  return prisma.product.findMany({
+    include: {
+      Purchase: true
+    }
   })
 }
 
-export function storeToken(accessToken: string, refreshToken: string) {
-  db.serialize(() => {
-    db.run('DELETE FROM tokens')
-    const stmt = db.prepare('INSERT INTO tokens (accessToken, refreshToken) VALUES (?, ?)')
-    stmt.run(accessToken, refreshToken)
-    stmt.finalize()
+export async function createProduct(name: string, unit: string) {
+  return prisma.product.create({
+    data: {
+      name,
+      unit,
+    }
   })
 }
 
-export async function getToken(): Promise<TokenData> {
-  try {
-    const row = await new Promise<TokenData>((resolve, reject) => {
-      db.get('SELECT * FROM tokens', (err, row: TokenData) => {
-        if (err) {
-          reject(err)
-        } else {
-          resolve(row)
-        }
-      })
-    })
-    return row
-  } catch (err) {
-    throw new Error(`Failed to get token: ${err.message}`)
-  }
+export async function deleteProduct(uuid: string) {
+  return prisma.product.delete({
+    where: {
+      uuid
+    }
+  })
+}
+
+export async function updateProduct(uuid: string, name: string, unit: string) {
+  return prisma.product.update({
+    where: {
+      uuid
+    },
+    data: {
+      name,
+      unit,
+    }
+  })
+}
+
+export async function getProduct(uuid: string) {
+  return prisma.product.findUnique({
+    where: {
+      uuid
+    },
+    include: {
+      Purchase: true
+    }
+  })
+}
+
+export async function getProductByName(name: string) {
+  return prisma.product.findFirst({
+    where: {
+      name
+    }
+  })
+}
+
+export async function getPurchasesForProduct(productUuid: string) {
+  return prisma.purchase.findMany({
+    where: {
+      productUuid
+    }
+  })
+}
+
+export async function createTokens(accessToken: string, refreshToken: string) {
+  return prisma.accessToken.createMany({
+    data: [{
+      name: 'accessToken',
+      token: accessToken,
+    }, {
+      name: 'refreshToken',
+      token: refreshToken,
+    }]
+  })
+}
+
+export async function getTokens() {
+  return prisma.accessToken.findMany()
+}
+
+export async function createShoppingCart(data: Prisma.ShoppingCartCreateInput) {
+  return prisma.shoppingCart.create({
+    data
+  })
 }
