@@ -37,6 +37,7 @@ model Purchase {
 
 model ShoppingCart {
   uuid      String     @id @default(cuid())
+  cartId    String     @unique
   date      DateTime
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt

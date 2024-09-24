@@ -1,11 +1,12 @@
 export interface TicketProductRow {
-  name: string
-  quantity: number
-  pricePerUnit: number
-  priceTotal: number
+  name: string;
+  quantity: number;
+  pricePerUnit: number;
+  priceTotal: number;
 }
 
 export interface TicketData {
-  date: Date
-  products: TicketProductRow[]
+  id: string;
+  date: Date;
+  products: TicketProductRow[];
 }
