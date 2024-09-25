@@ -2,17 +2,11 @@ import {
   authenticate,
   getAuthUrl,
   getMessages,
-  moveMessageToProcessedInbox,
   oauth2Client,
 } from "./lib/google";
 import express from "express";
-import { createShoppingCart, createTokens } from "./db";
-import { TicketData } from "./types";
-import {
-  getTicketDataFromPdfContent,
-  mapTicketDataToShoppingCartCreationInput,
-} from "./util";
-import { getRawPdfContentsFromMessage } from "./lib/pdf";
+import { createTokens } from "./db";
+import { extractDataFromMessage } from "./lib/mercaprecios";
 
 const app = express();
 
@@ -38,6 +32,7 @@ app.get("/oauthcallback", async (req, res) => {
 
 app.get("/downloadProducts", async (req, res) => {
   try {
+    await authenticate();
     const messages = await getMessages();
     console.log(`Got ${messages.length} messages`);
     let i = 0;
@@ -45,16 +40,7 @@ app.get("/downloadProducts", async (req, res) => {
       i++;
       console.log(`[${i}] Processing message ${i} of ${messages.length}`);
       try {
-        const pdfContent = await getRawPdfContentsFromMessage(message);
-        console.log(`[${i}] Got PDF content`);
-        const ticket = getTicketDataFromPdfContent(pdfContent);
-        console.log(`[${i}] Got ticket data`);
-        const shoppingCart = mapTicketDataToShoppingCartCreationInput(ticket);
-        console.log(`[${i}] Created shopping cart data`);
-        await createShoppingCart(shoppingCart);
-        console.log(`[${i}] Saved shopping cart to the database`);
-        await moveMessageToProcessedInbox(message.id);
-        console.log(`[${i}] Moved message to processed inbox`);
+        await extractDataFromMessage(message);
       } catch (e) {
         console.warn(`[${i}] Error processing message`, e);
       }
@@ -64,39 +50,6 @@ app.get("/downloadProducts", async (req, res) => {
     res.status(500).send(e.message);
   }
 });
-
-app.get("/rawParsedPdf", async (req, res) => {
-  const messages = await getMessages();
-  const pdfData = (await getRawPdfContentsFromMessage(messages[0])).split("\n");
-  res.send(pdfData);
-});
-
-app.get("/messages", async (req, res) => {
-  try {
-    const messages = await getMessages();
-    const allProducts = [];
-    let purchaseDate = null;
-    for (const message of messages) {
-      const pdfContent = await getRawPdfContentsFromMessage(message);
-      const { date, products } = getTicketDataFromPdfContent(pdfContent);
-      allProducts.push(...products);
-      purchaseDate = date;
-    }
-
-    res.json({
-      date: purchaseDate,
-      products: allProducts,
-    });
-  } catch (e) {
-    res.status(500).send(e.message);
-  }
-});
-
-async function initializeApp() {
-  await authenticate();
-}
-
-await initializeApp();
 
 app.listen(3000, () => {
   console.log("Server running on port 3000");
