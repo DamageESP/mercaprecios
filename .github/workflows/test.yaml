@@ -4,10 +4,10 @@ name: Run Tests
   - pull_request
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up Bun
         uses: oven-sh/setup-bun@v1
       - name: Install OpenSSL 3.0.x
