@@ -1,20 +1,20 @@
 name: Run Tests
-
-on: [push, pull_request]
-
+"on":
+  - push
+  - pull_request
 jobs:
   test:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-
       - name: Set up Bun
         uses: oven-sh/setup-bun@v1
-
+      - name: Install OpenSSL 3.0.x
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libssl-dev
       - name: Install dependencies
         run: bun install
-
       - name: Run tests
         run: bun test
