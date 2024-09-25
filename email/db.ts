@@ -10,6 +10,24 @@ export async function getProducts() {
   });
 }
 
+export async function searchProducts(searchTerm?: string) {
+  return prisma.product.findMany({
+    where: {
+      name: {
+        contains: searchTerm,
+        mode: "insensitive",
+      },
+    },
+    include: {
+      Purchase: {
+        include: {
+          ShoppingCart: true,
+        },
+      },
+    },
+  });
+}
+
 export async function createProduct(name: string, unit: string) {
   return prisma.product.create({
     data: {

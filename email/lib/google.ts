@@ -96,6 +96,9 @@ export async function moveMessageToProcessedInbox(messageId: string) {
 export async function getAttachmentsForMessage(
   message: gmail_v1.Schema$Message
 ): Promise<{ filename: string; body: string }[]> {
+  if (!message.id) {
+    throw new Error(`Message ID is required`);
+  }
   const attachmentNames =
     message.payload?.parts?.filter((part) => part.filename) || [];
   const attachments = [];
@@ -106,11 +109,16 @@ export async function getAttachmentsForMessage(
     }
     const attachmentData = await gmail.users.messages.attachments.get({
       userId: "me",
-      messageId: message.id as string,
+      messageId: message.id,
       id: attachmentId,
     });
     const data = attachmentData.data.data;
-    const filename = attachmentName.filename as string;
+    const filename = attachmentName.filename;
+    if (!data || !filename) {
+      console.warn(`Attachment ${filename} is missing data`);
+      continue;
+    }
+
     attachments.push({
       filename,
       body: data,

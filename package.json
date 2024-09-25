@@ -1,25 +1,27 @@
 {
-  "name": "mercaprecios",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "nuxt-app",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "bun src/app.ts",
-    "test": "jest"
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "@prisma/client": "^5.19.1",
     "@supabase/supabase-js": "^2.45.4",
+    "chart.js": "^4.4.4",
     "express": "^4.21.0",
     "googleapis": "^140.0.0",
+    "nuxt": "^3.13.0",
     "pdf-parse": "^1.1.1",
-    "sqlite3": "^5.1.7"
+    "vue": "latest",
+    "vue-chartjs": "^5.3.1",
+    "vue-router": "latest"
   },
   "devDependencies": {
-    "@types/express": "^4.17.21",
     "@types/jest": "^29.5.13",
     "@types/node": "^20.14.3",
     "@types/pdf-parse": "^1.1.4",

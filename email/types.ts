@@ -1,3 +1,5 @@
+import type { Serialize as NitroSerialize } from "nitropack";
+
 export interface TicketProductRow {
   name: string;
   quantity: number;
@@ -10,3 +12,5 @@ export interface TicketData {
   date: Date;
   products: TicketProductRow[];
 }
+
+export type Serialize<T> = NitroSerialize<T>;
