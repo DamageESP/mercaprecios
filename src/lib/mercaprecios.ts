@@ -1,23 +1,21 @@
-import type { gmail_v1 } from "googleapis"
-import { getAttachmentsForMessage } from "./google"
-import { getProductsFromTicket, getTicketDateFromPdf, parsePDF } from "./pdf"
-import { writeFileSync } from "fs"
-import { TicketData, TicketProductRow } from "../types"
+import { gmail_v1 } from "googleapis";
+import { getRawPdfContentsFromMessage } from "./pdf";
+import {
+  getTicketDataFromPdfContent,
+  mapTicketDataToShoppingCartCreationInput,
+} from "../util";
+import { createShoppingCart } from "../db";
+import { moveMessageToProcessedInbox } from "./google";
 
-export async function getTicketDataFromMessage(message: gmail_v1.Schema$Message): Promise<TicketData> {
-  const attachments = await getAttachmentsForMessage(message)
-  const messageProducts: TicketProductRow[] = []
-  let date: Date | null = null
-  for (const attachment of attachments) {
-    const { filename, body } = attachment
-    const outputPath = `./downloads/${filename}`
-    writeFileSync(outputPath, Buffer.from(body || '', 'base64'))
-    if (outputPath.endsWith('.pdf')) {
-      const pdfContent = await parsePDF(outputPath)
-      const products = getProductsFromTicket(pdfContent)
-      date = getTicketDateFromPdf(pdfContent)
-      messageProducts.push(...products)
-    }
-  }
-  return { date, products: messageProducts }
+export async function extractDataFromMessage(message: gmail_v1.Schema$Message) {
+  const pdfContent = await getRawPdfContentsFromMessage(message);
+  console.log(`Got PDF content`);
+  const ticket = getTicketDataFromPdfContent(pdfContent);
+  console.log(`Got ticket data`);
+  const shoppingCart = mapTicketDataToShoppingCartCreationInput(ticket);
+  console.log(`Created shopping cart data`);
+  await createShoppingCart(shoppingCart);
+  console.log(`Saved shopping cart to the database`);
+  await moveMessageToProcessedInbox(message.id);
+  console.log(`Moved message to processed inbox`);
 }

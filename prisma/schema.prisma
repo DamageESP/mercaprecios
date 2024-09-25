@@ -28,7 +28,7 @@ model Purchase {
   productUuid      String
   Product          Product      @relation(fields: [productUuid], references: [uuid])
   shoppingCartUuid String
-  ShoppingCart     ShoppingCart @relation(fields: [shoppingCartUuid], references: [uuid])
+  ShoppingCart     ShoppingCart @relation(fields: [shoppingCartUuid], references: [uuid], onDelete: Cascade)
   price            Float
   quantity         Int
   createdAt        DateTime     @default(now())
@@ -37,6 +37,7 @@ model Purchase {
 
 model ShoppingCart {
   uuid      String     @id @default(cuid())
+  cartId    String     @unique
   date      DateTime
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt

@@ -1,0 +1,1 @@
+export const PROCESSED_MESSAGES_LABEL = "PROCESSED";
