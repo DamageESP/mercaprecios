@@ -2,6 +2,7 @@ import {
   authenticate,
   getAuthUrl,
   getMessages,
+  moveMessageToProcessedInbox,
   oauth2Client,
 } from "./lib/google";
 import express from "express";
@@ -38,17 +39,25 @@ app.get("/oauthcallback", async (req, res) => {
 app.get("/downloadProducts", async (req, res) => {
   try {
     const messages = await getMessages();
-    const ticketData: TicketData[] = [];
+    console.log(`Got ${messages.length} messages`);
+    let i = 0;
     for (const message of messages) {
-      const pdfContent = await getRawPdfContentsFromMessage(message);
-      const ticket = getTicketDataFromPdfContent(pdfContent);
-      ticketData.push(ticket);
-    }
-    const shoppingCartCreationData = ticketData.map(
-      mapTicketDataToShoppingCartCreationInput
-    );
-    for (const shoppingCart of shoppingCartCreationData) {
-      await createShoppingCart(shoppingCart);
+      i++;
+      console.log(`[${i}] Processing message ${i} of ${messages.length}`);
+      try {
+        const pdfContent = await getRawPdfContentsFromMessage(message);
+        console.log(`[${i}] Got PDF content`);
+        const ticket = getTicketDataFromPdfContent(pdfContent);
+        console.log(`[${i}] Got ticket data`);
+        const shoppingCart = mapTicketDataToShoppingCartCreationInput(ticket);
+        console.log(`[${i}] Created shopping cart data`);
+        await createShoppingCart(shoppingCart);
+        console.log(`[${i}] Saved shopping cart to the database`);
+        await moveMessageToProcessedInbox(message.id);
+        console.log(`[${i}] Moved message to processed inbox`);
+      } catch (e) {
+        console.warn(`[${i}] Error processing message`, e);
+      }
     }
     res.json({ message: "Products downloaded and saved to the database" });
   } catch (e) {
