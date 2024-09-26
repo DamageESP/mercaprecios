@@ -1,21 +1,21 @@
 <script setup lang="ts">
-import type { Prisma, Product } from '@prisma/client';
+import { debounce } from 'chart.js/helpers';
 import { ref } from 'vue'
 import { Chart } from 'vue-chartjs';
 import { useRouter } from 'vue-router'
-import type { Serialize } from '~/email/types';
+import type { TimeSeriesData } from '~/email/types';
 
 const router = useRouter()
 const search = ref(router.currentRoute.value.query.q || '')
-const products = ref<Serialize<Prisma.ProductGetPayload<{ include: { Purchase: { include: { ShoppingCart: true } } } }>>[]>()
+const chartData = ref<TimeSeriesData>()
 
-const fetchProducts = async () => {
+const fetchProducts = debounce(async () => {
   const { data } = await useFetch('/api/products', {
     query: { q: search.value }
   })
   if (!data.value) return
-  products.value = data.value
-}
+  chartData.value = data.value
+}, 500)
 
 const searchHandler = () => {
   router.replace({ path: '/search', query: { q: search.value } })
@@ -23,26 +23,7 @@ const searchHandler = () => {
 
 watch(() => router.currentRoute.value.query.q, () => {
   fetchProducts()
-})
-
-const purchaseDates = computed(() => {
-  return products.value?.map((product) => product.Purchase.map((purchase) => new Date(purchase.ShoppingCart.date))) || []
-})
-
-const earliestDataPoint = computed(() => purchaseDates.value.reduce((acc, val) => acc.concat(val), []).sort((a, b) => a.getTime() - b.getTime()).shift())
-
-const latestDataPoint = computed(() => purchaseDates.value.reduce((acc, val) => acc.concat(val), []).sort((a, b) => b.getTime() - a.getTime()).pop())
-
-const chartData = computed(() => ({
-  labels: [earliestDataPoint.value, latestDataPoint.value],
-  datasets: [
-    {
-      label: 'Price',
-      backgroundColor: '#f87979',
-      data: products.value?.map((product) => product.Purchase.map(p => p.price)) || []
-    }
-  ]
-}))
+}, { immediate: true })
 </script>
 
 <template>
@@ -51,7 +32,7 @@ const chartData = computed(() => ({
   </div>
   <div>
     <ClientOnly>
-      <Chart type="line" :data="chartData" />
+      <Chart v-if="chartData" type="line" :data="chartData" />
     </ClientOnly>
   </div>
 </template>

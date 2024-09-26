@@ -1,4 +1,5 @@
-import { getProducts, searchProducts } from "~/email/db";
+import { searchProducts } from "~/email/db";
+import { buildTimeSeriesForProducts } from "~/email/util";
 
 export default defineEventHandler(async (event) => {
   const { q: searchTerm } = getQuery<{ q?: string }>(event);
@@ -6,5 +7,5 @@ export default defineEventHandler(async (event) => {
   // Example data, replace with your actual data fetching logic
   const products = await searchProducts(searchTerm);
 
-  return products;
+  return buildTimeSeriesForProducts(products);
 });

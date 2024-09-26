@@ -1,3 +1,4 @@
+import type { Prisma } from "@prisma/client";
 import type { Serialize as NitroSerialize } from "nitropack";
 
 export interface TicketProductRow {
@@ -14,3 +15,18 @@ export interface TicketData {
 }
 
 export type Serialize<T> = NitroSerialize<T>;
+
+export type ProductWithPurchase = Prisma.ProductGetPayload<{
+  include: { Purchase: { include: { ShoppingCart: true } } };
+}>;
+
+export interface TimeSeriesData {
+  labels: string[];
+  datasets: {
+    label: string;
+    data: (number | null)[];
+    fill: boolean;
+    borderColor: string;
+    tension: number;
+  }[];
+}

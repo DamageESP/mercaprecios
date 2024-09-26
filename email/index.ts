@@ -3,7 +3,9 @@ import { extractDataFromMessage } from "./lib/mercaprecios";
 
 export async function crawlEmail(): Promise<void> {
   try {
+    console.log("Authenticating with Google");
     await authenticate();
+    console.log("Getting messages");
     const messages = await getMessages();
     console.log(`Got ${messages.length} messages`);
     let i = 0;
@@ -20,3 +22,5 @@ export async function crawlEmail(): Promise<void> {
     console.error(e);
   }
 }
+
+await crawlEmail();

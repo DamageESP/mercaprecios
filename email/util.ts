@@ -1,5 +1,10 @@
 import { Prisma } from "@prisma/client";
-import { TicketData, TicketProductRow } from "./types";
+import type {
+  ProductWithPurchase,
+  TicketData,
+  TicketProductRow,
+  TimeSeriesData,
+} from "./types";
 import { getProductsFromTicket, getTicketDateFromPdf } from "./lib/pdf";
 
 export function getDateFromTicketLine(line: string): Date | null {
@@ -58,7 +63,7 @@ export function mapTicketDataToShoppingCartCreationInput(
     Purchase: {
       create: ticketData.products.map((product) => ({
         quantity: product.quantity,
-        price: product.priceTotal,
+        price: product.pricePerUnit,
         Product: {
           connectOrCreate: {
             create: {
@@ -93,5 +98,50 @@ export function getTicketDataFromPdfContent(pdfContent: string): TicketData {
   const date = getTicketDateFromPdf(pdfContent);
   const id = getTicketIdFromPdf(pdfContent);
 
+  if (!date) {
+    throw new Error("Invalid PDF");
+  }
+
   return { id, date, products };
+}
+
+function getPriceForProductForDay(product: ProductWithPurchase, date: Date) {
+  return (
+    product.Purchase.find(
+      (purchase) =>
+        new Date(purchase.ShoppingCart.date).toDateString() ===
+        date.toDateString()
+    )?.price || null
+  );
+}
+
+export function buildTimeSeriesForProducts(
+  products: ProductWithPurchase[]
+): TimeSeriesData {
+  const labels = [
+    ...new Set(
+      products
+        .map((product) =>
+          product.Purchase.map(
+            (purchase) => new Date(purchase.ShoppingCart.date)
+          )
+        )
+        .flat()
+        .sort((a, b) => a.getTime() - b.getTime())
+        .map((date) => date.toDateString()) || []
+    ),
+  ];
+
+  const datasets = products.map((product) => ({
+    label: product.name,
+    data: labels.map((date) =>
+      getPriceForProductForDay(product, new Date(date))
+    ),
+    fill: false,
+    borderColor: `#${Math.floor(Math.random() * 16777215).toString(16)}`,
+    tension: 0.1,
+    spanGaps: false,
+  }));
+
+  return { labels, datasets };
 }
