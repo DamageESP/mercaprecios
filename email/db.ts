@@ -3,20 +3,25 @@ import { Prisma, PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export async function getProducts() {
-  return prisma.product.findMany({
-    include: {
-      Purchase: true,
-    },
-  });
+  return prisma.product.findMany();
 }
 
-export async function searchProducts(searchTerm?: string) {
+export async function searchProduct(searchTerm?: string) {
   return prisma.product.findMany({
+    take: 10,
     where: {
       name: {
         contains: searchTerm,
         mode: "insensitive",
       },
+    },
+  });
+}
+
+export async function getProductHistory(productUuid: string) {
+  return prisma.product.findUnique({
+    where: {
+      uuid: productUuid,
     },
     include: {
       Purchase: {
