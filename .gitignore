@@ -1,4 +1,5 @@
 .nuxt
+.output
 node_modules
 database.db
 downloads/*.pdf
