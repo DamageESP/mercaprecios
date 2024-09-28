@@ -1,4 +1,4 @@
-import { getProductHistory, searchProduct } from "~/email/db";
+import { getProductHistory } from "~/email/db";
 import { buildTimeSeriesForProducts } from "~/email/util";
 
 export default defineEventHandler(async (event) => {
@@ -14,5 +14,8 @@ export default defineEventHandler(async (event) => {
     throw new Error("Product not found");
   }
 
-  return buildTimeSeriesForProducts([product]);
+  return {
+    ...product,
+    timeSeries: buildTimeSeriesForProducts([product]),
+  };
 });

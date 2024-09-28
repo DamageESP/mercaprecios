@@ -20,6 +20,10 @@ export type ProductWithPurchase = Prisma.ProductGetPayload<{
   include: { Purchase: { include: { ShoppingCart: true } } };
 }>;
 
+export type PurchaseWithShoppingCart = Prisma.PurchaseGetPayload<{
+  include: { ShoppingCart: true }
+}>;
+
 export interface TimeSeriesData {
   labels: string[];
   datasets: {

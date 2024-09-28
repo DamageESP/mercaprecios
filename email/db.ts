@@ -6,13 +6,25 @@ export async function getProducts() {
   return prisma.product.findMany();
 }
 
-export async function searchProduct(searchTerm?: string) {
+export async function searchProducts(searchTerm?: string) {
   return prisma.product.findMany({
-    take: 10,
+    take: 100,
     where: {
       name: {
         contains: searchTerm,
         mode: "insensitive",
+      },
+    },
+    orderBy: {
+      Purchase: {
+        _count: 'desc'
+      }
+    },
+    include: {
+      Purchase: {
+        include: {
+          ShoppingCart: true,
+        },
       },
     },
   });
