@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   compatibilityDate: "2024-04-03",
   devtools: { enabled: true },
-  plugins: [{ src: "~/plugins/chartjs.client.ts", mode: "client" }],
+  plugins: [{ src: "~/plugins/chartjs.ts" }],
   modules: ["@nuxtjs/tailwindcss"],
 
   // Add a main.scss file in the assets directory
