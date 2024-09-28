@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ProductWithPurchase, Serialize } from "~/email/types";
+import { computed, toRef, defineProps } from "vue";
 
 const props = defineProps<{
   product: Serialize<ProductWithPurchase>;
@@ -7,24 +8,26 @@ const props = defineProps<{
 
 const product = toRef(props, "product");
 
-import { computed } from "vue";
-
 const productFirstPurchase = computed(() => {
-  return product.value.Purchase?.sort((p1, p2) => {
+  const purchases = product.value.Purchase;
+  if (!purchases) return null;
+  return purchases.slice().sort((p1, p2) => {
     return (
       new Date(p1.ShoppingCart.date).getTime() -
       new Date(p2.ShoppingCart.date).getTime()
     );
-  })?.[0];
+  })[0];
 });
 
 const productLatestPurchase = computed(() => {
-  return product.value.Purchase?.sort((p1, p2) => {
+  const purchases = product.value.Purchase;
+  if (!purchases) return null;
+  return purchases.slice().sort((p1, p2) => {
     return (
       new Date(p2.ShoppingCart.date).getTime() -
       new Date(p1.ShoppingCart.date).getTime()
     );
-  })?.[0];
+  })[0];
 });
 
 // Format date in format DD/MM/YYYY
@@ -40,20 +43,28 @@ const formatMoney = (amount: number): string => {
 };
 
 const didProductGetCheaper = computed(() => {
-  return productFirstPurchase.value?.price > productLatestPurchase.value?.price;
+  const firstPurchase = productFirstPurchase.value;
+  const latestPurchase = productLatestPurchase.value;
+  if (!firstPurchase || !latestPurchase) return false;
+  return firstPurchase.price > latestPurchase.price;
 });
 
 const didProductGetMoreExpensive = computed(() => {
-  return productFirstPurchase.value?.price < productLatestPurchase.value?.price;
+  const firstPurchase = productFirstPurchase.value;
+  const latestPurchase = productLatestPurchase.value;
+  if (!firstPurchase || !latestPurchase) return false;
+  return firstPurchase.price < latestPurchase.price;
 });
 
 const priceDifference = computed(() => {
+  if (!productLatestPurchase.value || !productFirstPurchase.value) return 0;
   return Math.abs(
     productLatestPurchase.value?.price - productFirstPurchase.value?.price
   );
 });
 
 const percentageDifference = computed(() => {
+  if (!productLatestPurchase.value || !productFirstPurchase.value) return 0;
   return Math.round(
     (priceDifference.value / productFirstPurchase.value?.price) * 100
   );
@@ -84,11 +95,15 @@ const percentageDifference = computed(() => {
       </div>
       <div class="flex items-center">
         <i class="icon-calendar me-2"></i>
-        <span>{{ formatDate(productLatestPurchase.ShoppingCart.date) }}</span>
+        <span v-if="productLatestPurchase">{{
+          formatDate(productLatestPurchase.ShoppingCart.date)
+        }}</span>
       </div>
       <div class="flex items-center">
         <i class="icon-coin me-2"></i>
-        <span>{{ formatMoney(productLatestPurchase.price) }}</span>
+        <span v-if="productLatestPurchase">{{
+          formatMoney(productLatestPurchase.price)
+        }}</span>
       </div>
       <div
         class="flex items-center"
