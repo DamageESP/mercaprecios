@@ -35,30 +35,19 @@ const searchProducts = async () => {
 const debouncedSearchProducts = debounce(searchProducts, 500);
 
 watch(searchTerm, () => {
-  console.log("searchTerm changed");
   debouncedSearchProducts();
 });
 
 onMounted(() => {
-  console.log("mounted");
   searchProducts();
 });
 </script>
 
 <template>
-  <div>
-    <input
-      type="search"
-      v-model="searchTerm"
-      placeholder="Buscar..."
-      class="p-2 outline-none border rounded"
-    />
+  <div class="flex flex-col">
+    <input type="search" v-model="searchTerm" placeholder="Buscar..." class="p-2 outline-none border rounded" />
     <ul v-if="shouldShowResults && searchResults.length">
-      <li
-        v-for="product in searchResults"
-        :key="product.uuid"
-        @click="emit('product-selected', product)"
-      >
+      <li v-for="product in searchResults" :key="product.uuid" @click="emit('product-selected', product)">
         {{ product.name }}
       </li>
     </ul>

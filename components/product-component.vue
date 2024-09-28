@@ -72,23 +72,18 @@ const percentageDifference = computed(() => {
 </script>
 
 <template>
-  <article
-    class="p-4 flex flex-col rounded-lg hover:border-gray-600 border-2 border-transparent"
-    :class="{
-      'bg-gray-100': !didProductGetCheaper && !didProductGetMoreExpensive,
-      'bg-green-200': didProductGetCheaper,
-      'bg-red-200': didProductGetMoreExpensive,
-    }"
-  >
+  <article class="p-4 flex flex-col rounded-lg hover:border-gray-600 border-2 border-transparent" :class="{
+    'bg-gray-100': !didProductGetCheaper && !didProductGetMoreExpensive,
+    'bg-green-200': didProductGetCheaper,
+    'bg-red-200': didProductGetMoreExpensive,
+  }">
     <header class="flex items-center mb-2">
       <i class="icon-product me-2"></i>
-      <h2
-        class="text-lg whitespace-nowrap overflow-hidden overflow-ellipsis font-semibold"
-      >
+      <h2 class="text-lg whitespace-nowrap overflow-hidden overflow-ellipsis font-semibold">
         {{ product.name }}
       </h2>
     </header>
-    <div class="grid grid-cols-2 gap-3">
+    <div class="flex gap-3 items-start justify-between flex-grow">
       <div class="flex items-center">
         <i class="icon-bill me-2"></i>
         <span>{{ product.Purchase?.length ?? 0 }} compras</span>
@@ -97,35 +92,28 @@ const percentageDifference = computed(() => {
         <i class="icon-calendar me-2"></i>
         <span v-if="productLatestPurchase">{{
           formatDate(productLatestPurchase.ShoppingCart.date)
-        }}</span>
+          }}</span>
       </div>
-      <div class="flex items-center">
+    </div>
+    <div class="flex flex-col items-end justify-center mt-3">
+      <div class="flex items-center justify-end text-xl font-semibold">
         <i class="icon-coin me-2"></i>
         <span v-if="productLatestPurchase">{{
           formatMoney(productLatestPurchase.price)
         }}</span>
       </div>
-      <div
-        class="flex items-center"
-        v-if="didProductGetCheaper || didProductGetMoreExpensive"
-      >
-        <i
-          class="me-2"
-          :class="{
-            'icon-trend-down': didProductGetCheaper,
-            'icon-trend-up': didProductGetMoreExpensive,
-          }"
-        ></i>
+      <div class="flex items-center text-sm" v-if="didProductGetCheaper || didProductGetMoreExpensive">
+        <i class="me-2" :class="{
+          'icon-trend-down': didProductGetCheaper,
+          'icon-trend-up': didProductGetMoreExpensive,
+        }"></i>
         <span v-if="didProductGetCheaper">-</span>
         <span v-else>+</span>
-        <span
-          >{{ formatMoney(priceDifference) }} ({{
-            percentageDifference
-          }}
-          %)</span
-        >
+        <span>{{ formatMoney(priceDifference) }} ({{
+          percentageDifference
+        }}
+          %)</span>
       </div>
-      <span v-else></span>
     </div>
   </article>
 </template>
