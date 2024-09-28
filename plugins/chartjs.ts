@@ -8,7 +8,7 @@ import {
   LinearScale,
   PointElement,
   LineElement,
-} from "chart.js";
+} from "chart.js/auto";
 
 export default defineNuxtPlugin(() => {
   Chart.register(
