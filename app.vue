@@ -13,6 +13,10 @@
               >Mercaprecios</span
             >
           </router-link>
+          <div class="grid gap-3 grid-cols-2 justify-end">
+            <span class="indie-flower-bold text-xl">Contribuir</span>
+            <span class="indie-flower-bold text-xl">Github</span>
+          </div>
         </div>
       </nav>
     </header>

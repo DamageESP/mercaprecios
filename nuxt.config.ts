@@ -11,6 +11,7 @@ export default defineNuxtConfig({
   // Add link styles to head of the app
   app: {
     head: {
+      title: "Mercaprecios - Rastrea Precios de Supermercados y Gestiona tus Gastos Fácilmente",
       link: [
         { rel: "preconnect", href: "https://fonts.googleapis.com" },
         {
