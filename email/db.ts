@@ -8,7 +8,7 @@ export async function getProducts() {
 
 export async function searchProducts(searchTerm?: string) {
   return prisma.product.findMany({
-    take: 100,
+    take: 12,
     where: {
       name: {
         contains: searchTerm,

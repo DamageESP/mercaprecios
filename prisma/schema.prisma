@@ -39,6 +39,7 @@ model ShoppingCart {
   uuid      String     @id @default(cuid())
   cartId    String     @unique
   date      DateTime
+  userEmail String?
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   Purchase  Purchase[]
@@ -47,6 +48,14 @@ model ShoppingCart {
 model AccessToken {
   uuid      String   @id @default(cuid())
   name      String   @unique
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model LoginLinks {
+  uuid      String   @id @default(cuid())
+  email     String   @unique
   token     String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -45,9 +45,18 @@ onMounted(() => {
 
 <template>
   <div class="flex flex-col">
-    <input type="search" v-model="searchTerm" placeholder="Buscar..." class="p-2 outline-none border rounded" />
+    <input
+      type="search"
+      v-model="searchTerm"
+      placeholder="Buscar..."
+      class="p-2 outline-none border border-slate-400 placeholder-slate-600 rounded"
+    />
     <ul v-if="shouldShowResults && searchResults.length">
-      <li v-for="product in searchResults" :key="product.uuid" @click="emit('product-selected', product)">
+      <li
+        v-for="product in searchResults"
+        :key="product.uuid"
+        @click="emit('product-selected', product)"
+      >
         {{ product.name }}
       </li>
     </ul>

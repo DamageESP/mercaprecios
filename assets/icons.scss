@@ -1,4 +1,5 @@
 @mixin icon($icon, $width: 24px, $height: $width) {
+  display: block;
   width: $width;
   max-width: $width;
   min-width: $width;
@@ -40,11 +41,76 @@
   animation: spin 1s linear infinite;
 }
 
+.icon-contribute {
+  @include icon('contribute', 18px);
+
+  &:hover {
+    animation: wave 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  }
+}
+
+.icon-github {
+  @include icon('github', 18px);
+}
+
+.icon-user {
+  @include icon('user', 18px);
+}
+
+.icon-rocket {
+  @include icon('rocket', 36px);
+  animation: wave 1s linear infinite;
+  animation-direction: alternate;
+}
+
+.icon-smile {
+  @include icon('smile', 36px);
+  animation: shake 1s linear infinite;
+  animation-direction: alternate;
+}
+
+.icon-mail {
+  @include icon('mail', 36px);
+  animation: wave 1s linear infinite;
+  animation-direction: alternate;
+}
+
+.icon-paperplane {
+  @include icon('paperplane', 18px);
+}
+
 @keyframes spin {
   0% {
     transform: rotate(0deg);
   }
   100% {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes wave {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(30deg);
+  }
+}
+
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  50% {
+    transform: translateX(5px);
+  }
+  75% {
+    transform: translateX(-5px);
+  }
+  100% {
+    transform: translateX(0);
   }
 }
