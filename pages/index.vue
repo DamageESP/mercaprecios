@@ -6,7 +6,9 @@ const search = ref("");
 const isSearching = ref(false);
 const searchResults = ref<Serialize<ProductWithPurchase>[]>([]);
 
-const { data: recentlyChangedProducts, status: getRecentlyChangedProductStatus } = await useLazyFetch("/api/products");
+const { data: recentlyChangedProducts, status } = await useLazyFetch(
+  "/api/products"
+);
 </script>
 
 <template>
@@ -27,13 +29,22 @@ const { data: recentlyChangedProducts, status: getRecentlyChangedProductStatus }
   <div class="max-w-screen-xl mx-auto px-4">
     <h1 class="text-2xl mb-4 indie-flower-bold">Cambios en la última semana</h1>
     <div class="flex gap-2 mb-4 overflow-x-auto">
-      <nuxt-link v-for="product in recentlyChangedProducts" :key="product.uuid" :to="`/${product.uuid}`">
+      <nuxt-link
+        v-for="product in recentlyChangedProducts"
+        :key="product.uuid"
+        :to="`/${product.uuid}`"
+      >
         <product-component class="w-[250px] h-full" :product="product" />
       </nuxt-link>
     </div>
     <h1 class="text-2xl mb-4 indie-flower-bold">Los productos más populares</h1>
-    <product-search-component class="mb-4" v-model:search-term="search" v-model:isSearching="isSearching"
-      v-model:search-results="searchResults" :should-show-results="false" />
+    <product-search-component
+      class="mb-4"
+      v-model:search-term="search"
+      v-model:isSearching="isSearching"
+      v-model:search-results="searchResults"
+      :should-show-results="false"
+    />
     <section v-if="isSearching" class="flex items-center justify-center">
       <i class="icon-spinner me-3" />
       <p class="text-xl indie-flower-bold">Buscando...</p>
@@ -41,8 +52,15 @@ const { data: recentlyChangedProducts, status: getRecentlyChangedProductStatus }
     <section v-else-if="!searchResults.length" class="text-center">
       <p class="text-xl indie-flower-bold">No hay resultados</p>
     </section>
-    <section v-else class="grid xl:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-2">
-      <nuxt-link v-for="product in searchResults" :key="product.uuid" :to="`/${product.uuid}`">
+    <section
+      v-else
+      class="grid xl:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-2"
+    >
+      <nuxt-link
+        v-for="product in searchResults"
+        :key="product.uuid"
+        :to="`/${product.uuid}`"
+      >
         <product-component class="h-full" :product="product" />
       </nuxt-link>
     </section>

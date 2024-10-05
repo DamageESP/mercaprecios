@@ -11,13 +11,14 @@
     "crawlMessages": "bun email/index.ts"
   },
   "dependencies": {
+    "@nuxtjs/supabase": "^1.4.0",
     "@nuxtjs/tailwindcss": "^6.12.1",
     "@prisma/client": "^5.19.1",
     "@supabase/supabase-js": "^2.45.4",
     "chart.js": "^4.4.4",
     "express": "^4.21.0",
     "googleapis": "^140.0.0",
-    "nuxt": "^3.13.0",
+    "nuxt": "^3.13.2",
     "pdf-parse": "^1.1.1",
     "vue": "latest",
     "vue-chartjs": "^5.3.1",

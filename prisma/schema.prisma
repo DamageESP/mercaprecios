@@ -52,11 +52,3 @@ model AccessToken {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
-
-model LoginLinks {
-  uuid      String   @id @default(cuid())
-  email     String   @unique
-  token     String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}

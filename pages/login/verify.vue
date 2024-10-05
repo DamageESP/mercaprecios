@@ -1,15 +1,15 @@
 <script setup lang="ts">
+const user = useSupabaseUser();
+
 definePageMeta({
   layout: "empty",
 });
 
-const { params } = useRoute();
-const token = params.tokenId;
+const { query } = useRoute();
+const token = query.tokenId;
 
 onMounted(() => {
-  $fetch(`/api/login/${token}`, {
-    method: "POST",
-  });
+  console.log(user.value);
 });
 </script>
 

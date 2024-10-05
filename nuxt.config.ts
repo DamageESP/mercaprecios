@@ -1,9 +1,15 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: "2024-04-03",
-  devtools: { enabled: true },
+  devtools: {
+    enabled: true,
+
+    timeline: {
+      enabled: true,
+    },
+  },
   plugins: [{ src: "~/plugins/chartjs.ts" }],
-  modules: ["@nuxtjs/tailwindcss"],
+  modules: ["@nuxtjs/tailwindcss", "@nuxtjs/supabase"],
 
   // Add a main.scss file in the assets directory
   css: ["~/assets/main.scss", "~/assets/icons.scss"],
@@ -11,7 +17,7 @@ export default defineNuxtConfig({
   // Inject env variables to the client
   runtimeConfig: {
     supabaseUrl: process.env.NUXT_SUPABASE_URL,
-    supabaseAnonKey: process.env.NUXT_SUPABASE_URL,
+    supabaseAnonKey: process.env.NUXT_SUPABASE_KEY,
   },
 
   ssr: false,
@@ -35,4 +41,10 @@ export default defineNuxtConfig({
       ],
     },
   },
+
+  supabase: {
+    // Do not redirect the user to /login if not authenticated
+    // (allow the user to navigate freely, auth will be checked on the specific pages)
+    redirect: false
+  }
 });
