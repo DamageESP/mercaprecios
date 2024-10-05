@@ -8,10 +8,19 @@ export default defineNuxtConfig({
   // Add a main.scss file in the assets directory
   css: ["~/assets/main.scss", "~/assets/icons.scss"],
 
+  // Inject env variables to the client
+  runtimeConfig: {
+    supabaseUrl: process.env.NUXT_SUPABASE_URL,
+    supabaseAnonKey: process.env.NUXT_SUPABASE_URL,
+  },
+
+  ssr: false,
+
   // Add link styles to head of the app
   app: {
     head: {
-      title: "Mercaprecios - Rastrea Precios de Supermercados y Gestiona tus Gastos Fácilmente",
+      title:
+        "Mercaprecios - Rastrea Precios de Supermercados y Gestiona tus Gastos Fácilmente",
       link: [
         { rel: "preconnect", href: "https://fonts.googleapis.com" },
         {

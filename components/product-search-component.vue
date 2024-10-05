@@ -21,13 +21,10 @@ const emit = defineEmits<{
 
 const searchProducts = async () => {
   isSearching.value = true;
-  const data = await $fetch("/api/products", {
+  const data = await $fetch("/api/products/search", {
     query: { q: searchTerm.value },
   });
   if (!data) return;
-  if (data.length === 1) {
-    emit("product-selected", data[0]);
-  }
   searchResults.value = data;
   isSearching.value = false;
 };
@@ -45,18 +42,10 @@ onMounted(() => {
 
 <template>
   <div class="flex flex-col">
-    <input
-      type="search"
-      v-model="searchTerm"
-      placeholder="Buscar..."
-      class="p-2 outline-none border border-slate-400 placeholder-slate-600 rounded"
-    />
+    <input type="search" v-model="searchTerm" placeholder="Buscar..."
+      class="p-2 outline-none border border-slate-400 placeholder-slate-600 rounded" />
     <ul v-if="shouldShowResults && searchResults.length">
-      <li
-        v-for="product in searchResults"
-        :key="product.uuid"
-        @click="emit('product-selected', product)"
-      >
+      <li v-for="product in searchResults" :key="product.uuid" @click="emit('product-selected', product)">
         {{ product.name }}
       </li>
     </ul>

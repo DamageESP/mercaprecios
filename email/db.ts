@@ -6,6 +6,38 @@ export async function getProducts() {
   return prisma.product.findMany();
 }
 
+export async function getProductsWithRecentPriceChanges(periodDays = 7) {
+  const productsWithPurchaseInPeriod = await prisma.product.findMany({
+    where: {
+      Purchase: {
+        some: {
+          ShoppingCart: {
+            date: {
+              gte: new Date(Date.now() - periodDays * 24 * 60 * 60 * 1000),
+            },
+          },
+        },
+      },
+    },
+    include: {
+      Purchase: {
+        include: {
+          ShoppingCart: true,
+        },
+      },
+    },
+  });
+
+  const productsWithPriceChanges = productsWithPurchaseInPeriod.filter(
+    (product) => {
+      const prices = product.Purchase.map((purchase) => purchase.price);
+      return new Set(prices).size > 1;
+    }
+  );
+
+  return productsWithPriceChanges;
+}
+
 export async function searchProducts(searchTerm?: string) {
   return prisma.product.findMany({
     take: 12,
@@ -17,8 +49,8 @@ export async function searchProducts(searchTerm?: string) {
     },
     orderBy: {
       Purchase: {
-        _count: 'desc'
-      }
+        _count: "desc",
+      },
     },
     include: {
       Purchase: {
@@ -126,6 +158,22 @@ export async function createShoppingCart(data: Prisma.ShoppingCartCreateInput) {
   });
 }
 
-export async function getShoppingCarts() {
-  return prisma.shoppingCart.findMany();
+export async function getShoppingCarts(
+  filters?: Prisma.ShoppingCartFindManyArgs
+) {
+  return prisma.shoppingCart.findMany(filters);
+}
+
+export async function createLoginLink(data: Prisma.LoginLinksCreateInput) {
+  return prisma.loginLinks.create({
+    data,
+  });
+}
+
+export async function getLoginLink(token: string) {
+  return prisma.loginLinks.findUnique({
+    where: {
+      token,
+    },
+  });
 }
