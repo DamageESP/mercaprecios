@@ -30,18 +30,6 @@ const productLatestPurchase = computed(() => {
   })[0];
 });
 
-// Format date in format DD/MM/YYYY
-const formatDate = (date: string): string => {
-  return new Date(date).toLocaleDateString("es-ES");
-};
-
-const formatMoney = (amount: number): string => {
-  return new Intl.NumberFormat("es-ES", {
-    style: "currency",
-    currency: "EUR",
-  }).format(amount);
-};
-
 const didProductGetCheaper = computed(() => {
   const firstPurchase = productFirstPurchase.value;
   const latestPurchase = productLatestPurchase.value;
@@ -92,7 +80,7 @@ const percentageDifference = computed(() => {
         <i class="icon-calendar me-2"></i>
         <span v-if="productLatestPurchase">{{
           formatDate(productLatestPurchase.ShoppingCart.date)
-          }}</span>
+        }}</span>
       </div>
     </div>
     <div class="flex flex-col items-end justify-center mt-3">
@@ -100,7 +88,7 @@ const percentageDifference = computed(() => {
         <i class="icon-coin me-2"></i>
         <span v-if="productLatestPurchase">{{
           formatMoney(productLatestPurchase.price)
-        }}</span>
+          }}</span>
       </div>
       <div class="flex items-center text-sm" v-if="didProductGetCheaper || didProductGetMoreExpensive">
         <i class="me-2" :class="{
@@ -111,7 +99,7 @@ const percentageDifference = computed(() => {
         <span v-else>+</span>
         <span>{{ formatMoney(priceDifference) }} ({{
           percentageDifference
-        }}
+          }}
           %)</span>
       </div>
     </div>
