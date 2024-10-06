@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from "fs";
 import PdfParse from "pdf-parse/lib/pdf-parse";
 import { getDateFromTicketLine, getProductFromTicketLine } from "../util";
-import { TicketProductRow } from "../types";
+import type { TicketProductRow } from "../types";
 import { gmail_v1 } from "googleapis";
 import { getAttachmentsForMessage } from "./google";
 

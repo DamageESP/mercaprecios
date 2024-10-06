@@ -8,6 +8,9 @@ import { createShoppingCart } from "../db";
 import { moveMessageToProcessedInbox } from "./google";
 
 export async function extractDataFromMessage(message: gmail_v1.Schema$Message) {
+  if (!message?.id) {
+    throw new Error(`Message ID is required`);
+  }
   const pdfContent = await getRawPdfContentsFromMessage(message);
   console.log(`Got PDF content`);
   const ticket = getTicketDataFromPdfContent(pdfContent);
