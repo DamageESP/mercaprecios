@@ -1,6 +1,7 @@
 import { gmail_v1 } from "googleapis";
 import { getRawPdfContentsFromMessage } from "./pdf";
 import {
+  getSenderFromEmailHeaders,
   getTicketDataFromPdfContent,
   mapTicketDataToShoppingCartCreationInput,
 } from "../util";
@@ -17,6 +18,10 @@ export async function extractDataFromMessage(message: gmail_v1.Schema$Message) {
   console.log(`Got ticket data`);
   const shoppingCart = mapTicketDataToShoppingCartCreationInput(ticket);
   console.log(`Created shopping cart data`);
+  const senderEmail = getSenderFromEmailHeaders(message.payload?.headers || []);
+  if (senderEmail) {
+    shoppingCart.userEmail = senderEmail;
+  }
   await createShoppingCart(shoppingCart);
   console.log(`Saved shopping cart to the database`);
   await moveMessageToProcessedInbox(message.id);

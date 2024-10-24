@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import type { Prisma } from '@prisma/client';
-import type { Serialize } from '~/email/types';
+import type {
+  Serialize,
+  ShoppingCartWithPurchasesAndProducts,
+} from "~/email/types";
 
 const user = useSupabaseUser();
 const router = useRouter();
 
 const { data: shoppingCarts } = await useLazyFetch("/api/dashboard");
 
-function getCartTotal(cart: Serialize<Prisma.ShoppingCartGetPayload<{
-  include: { Purchase: { include: { Product: true } } };
-}>>) {
+function getCartTotal(cart: Serialize<ShoppingCartWithPurchasesAndProducts>) {
   return cart.Purchase.reduce((acc, purchase) => acc + purchase.price, 0);
 }
 

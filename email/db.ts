@@ -163,17 +163,3 @@ export async function getShoppingCarts(
 ) {
   return prisma.shoppingCart.findMany(filters);
 }
-
-export async function createLoginLink(data: Prisma.LoginLinksCreateInput) {
-  return prisma.loginLinks.create({
-    data,
-  });
-}
-
-export async function getLoginLink(token: string) {
-  return prisma.loginLinks.findUnique({
-    where: {
-      token,
-    },
-  });
-}

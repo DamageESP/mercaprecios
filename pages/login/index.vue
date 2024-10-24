@@ -1,6 +1,8 @@
 <script setup lang="ts">
 const email = ref("");
-const emailSendingStatus = ref<"not_sent" | "sent" | "error">("not_sent");
+const emailSendingStatus = ref<"not_sent" | "sending" | "sent" | "error">(
+  "not_sent"
+);
 const supabase = useSupabaseClient();
 const user = useSupabaseUser();
 const router = useRouter();
@@ -9,6 +11,7 @@ const {
 } = useRuntimeConfig();
 
 async function doLogin() {
+  emailSendingStatus.value = "sending";
   const { error } = await supabase.auth.signInWithOtp({
     email: email.value,
     options: {
@@ -34,7 +37,11 @@ onMounted(() => {
     class="max-w-screen-xl mx-auto mt-[100px] flex items-center justify-center"
   >
     <div class="w-[400px] flex flex-col text-center">
-      <template v-if="emailSendingStatus !== 'sent'">
+      <template
+        v-if="
+          emailSendingStatus === 'not_sent' || emailSendingStatus === 'error'
+        "
+      >
         <div class="flex items-center justify-center mb-4">
           <i class="icon-mail me-5" />
           <span class="indie-flower-bold text-4xl">Tu email</span>
@@ -65,6 +72,13 @@ onMounted(() => {
           <i class="icon-paperplane me-2" />
           <span>Enviar enlace</span>
         </button>
+      </template>
+      <template v-else-if="emailSendingStatus === 'sending'">
+        <div class="flex items-center justify-center mb-4">
+          <i class="icon-mail me-5" />
+          <span class="indie-flower-bold text-4xl">Enviando...</span>
+        </div>
+        <p>¡En breve recibirás un correo!</p>
       </template>
       <template v-else>
         <div class="flex items-center justify-center mb-4">

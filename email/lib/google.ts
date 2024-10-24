@@ -62,7 +62,7 @@ export async function getMessages() {
   return messages;
 }
 
-export async function ensureProcessedInboxLabelExists() {
+export async function getOrCreateProcessedInboxLabelId(): Promise<string> {
   const labels = await gmail.users.labels.list({
     userId: "me",
   });
@@ -79,16 +79,18 @@ export async function ensureProcessedInboxLabelExists() {
       },
     });
     console.log("Created label", creationResponse.data);
+    return creationResponse.data.id || "";
   }
+  return inboxLabel.id || "";
 }
 
 export async function moveMessageToProcessedInbox(messageId: string) {
-  await ensureProcessedInboxLabelExists();
+  const labelId = await getOrCreateProcessedInboxLabelId();
   await gmail.users.messages.modify({
     userId: "me",
     id: messageId,
     requestBody: {
-      addLabelIds: ["Label_1"],
+      addLabelIds: [labelId],
     },
   });
 }

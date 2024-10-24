@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { ProductWithPurchase, Serialize } from "~/email/types";
-import { computed, toRef, defineProps } from "vue";
 
 const props = defineProps<{
   product: Serialize<ProductWithPurchase>;
@@ -60,14 +59,19 @@ const percentageDifference = computed(() => {
 </script>
 
 <template>
-  <article class="p-4 flex flex-col rounded-lg hover:border-gray-600 border-2 border-transparent" :class="{
-    'bg-gray-100': !didProductGetCheaper && !didProductGetMoreExpensive,
-    'bg-green-200': didProductGetCheaper,
-    'bg-red-200': didProductGetMoreExpensive,
-  }">
+  <article
+    class="p-4 flex flex-col rounded-lg hover:border-gray-600 border-2 border-transparent"
+    :class="{
+      'bg-gray-100': !didProductGetCheaper && !didProductGetMoreExpensive,
+      'bg-green-200': didProductGetCheaper,
+      'bg-red-200': didProductGetMoreExpensive,
+    }"
+  >
     <header class="flex items-center mb-2">
       <i class="icon-product me-2"></i>
-      <h2 class="text-lg whitespace-nowrap overflow-hidden overflow-ellipsis font-semibold">
+      <h2
+        class="text-lg whitespace-nowrap overflow-hidden overflow-ellipsis font-semibold"
+      >
         {{ product.name }}
       </h2>
     </header>
@@ -88,19 +92,27 @@ const percentageDifference = computed(() => {
         <i class="icon-coin me-2"></i>
         <span v-if="productLatestPurchase">{{
           formatMoney(productLatestPurchase.price)
-          }}</span>
+        }}</span>
       </div>
-      <div class="flex items-center text-sm" v-if="didProductGetCheaper || didProductGetMoreExpensive">
-        <i class="me-2" :class="{
-          'icon-trend-down': didProductGetCheaper,
-          'icon-trend-up': didProductGetMoreExpensive,
-        }"></i>
+      <div
+        class="flex items-center text-sm"
+        v-if="didProductGetCheaper || didProductGetMoreExpensive"
+      >
+        <i
+          class="me-2"
+          :class="{
+            'icon-trend-down': didProductGetCheaper,
+            'icon-trend-up': didProductGetMoreExpensive,
+          }"
+        ></i>
         <span v-if="didProductGetCheaper">-</span>
         <span v-else>+</span>
-        <span>{{ formatMoney(priceDifference) }} ({{
-          percentageDifference
+        <span
+          >{{ formatMoney(priceDifference) }} ({{
+            percentageDifference
           }}
-          %)</span>
+          %)</span
+        >
       </div>
     </div>
   </article>

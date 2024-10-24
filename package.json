@@ -8,7 +8,8 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "crawlMessages": "bun email/index.ts"
+    "crawlMessages": "bun email/index.ts",
+    "authenticate": "bun email/authenticate.ts"
   },
   "dependencies": {
     "@nuxtjs/supabase": "^1.4.0",

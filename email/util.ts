@@ -6,6 +6,7 @@ import type {
   TimeSeriesData,
 } from "./types";
 import { getProductsFromTicket, getTicketDateFromPdf } from "./lib/pdf";
+import type { gmail_v1 } from "googleapis";
 
 export function getDateFromTicketLine(line: string): Date | null {
   // Match the line using regex to extract the date
@@ -44,7 +45,7 @@ export function getProductFromTicketLine(
     : parseFloat(match[3].replace(",", "."));
   const pricePerUnit = match[4]
     ? parseFloat(match[3].replace(",", "."))
-    : undefined ?? parseFloat((priceTotal / quantity).toFixed(2));
+    : parseFloat((priceTotal / quantity).toFixed(2));
 
   return {
     quantity,
@@ -144,4 +145,19 @@ export function buildTimeSeriesForProducts(
   }));
 
   return { labels, datasets };
+}
+
+export function getSenderFromEmailHeaders(headers: gmail_v1.Schema$MessagePartHeader[]) {
+  const MERCADONA_ADDRESS = 'ticket_digital@mail.mercadona.com'
+
+  const fromHeader = headers.find((header) => header.name === "From");
+  const toHeader = headers.find((header) => header.name === "To");
+
+  const targetAddress = fromHeader?.value?.includes(MERCADONA_ADDRESS) ? toHeader?.value : fromHeader?.value;
+  const isEmailAddress = !targetAddress?.includes("<")
+
+  if (isEmailAddress) {
+    return targetAddress || null;
+  }
+  return targetAddress?.split("<")?.[1]?.replace(">", "") || null;
 }
