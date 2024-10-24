@@ -16,8 +16,8 @@ export default defineNuxtConfig({
 
   // Inject env variables to the client
   runtimeConfig: {
-    supabaseUrl: process.env.NUXT_SUPABASE_URL,
-    supabaseAnonKey: process.env.NUXT_SUPABASE_KEY,
+    supabaseUrl: process.env.SUPABASE_URL,
+    supabaseAnonKey: process.env.SUPABASE_KEY,
   },
 
   ssr: false,
