@@ -2,7 +2,6 @@ import { createClient } from "@supabase/supabase-js";
 
 export default defineEventHandler(async (event) => {
   const { token_hash, type } = getQuery<{ token_hash: string, type: 'magiclink' }>(event);
-  const { supabaseUrl, supabaseAnonKey } = useRuntimeConfig();
 
   console.log(`Token_hashtoken_hash: ${token_hash}`);
 
@@ -14,7 +13,7 @@ export default defineEventHandler(async (event) => {
   }
 
   // Generate a JWT for the user
-  const supabase = createClient(supabaseUrl, supabaseAnonKey);
+  const supabase = createClient(process.env.SUPABASE_URL ?? '', process.env.SUPABASE_KEY ?? '');
   await supabase.auth.verifyOtp({ token_hash, type });
 
   return "ok";
