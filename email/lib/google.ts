@@ -6,7 +6,7 @@ import { PROCESSED_MESSAGES_LABEL } from "./constants";
 export const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
-  "http://localhost:3000/oauthcallback"
+  `${process.env.PUBLIC_URL}/oauthcallback`
 );
 
 export function getAuthUrl() {
@@ -62,7 +62,7 @@ export async function getMessages() {
   return messages;
 }
 
-export async function ensureProcessedInboxLabelExists() {
+export async function getOrCreateProcessedInboxLabelId(): Promise<string> {
   const labels = await gmail.users.labels.list({
     userId: "me",
   });
@@ -79,16 +79,18 @@ export async function ensureProcessedInboxLabelExists() {
       },
     });
     console.log("Created label", creationResponse.data);
+    return creationResponse.data.id || "";
   }
+  return inboxLabel.id || "";
 }
 
 export async function moveMessageToProcessedInbox(messageId: string) {
-  await ensureProcessedInboxLabelExists();
+  const labelId = await getOrCreateProcessedInboxLabelId();
   await gmail.users.messages.modify({
     userId: "me",
     id: messageId,
     requestBody: {
-      addLabelIds: ["Label_1"],
+      addLabelIds: [labelId],
     },
   });
 }
@@ -96,6 +98,9 @@ export async function moveMessageToProcessedInbox(messageId: string) {
 export async function getAttachmentsForMessage(
   message: gmail_v1.Schema$Message
 ): Promise<{ filename: string; body: string }[]> {
+  if (!message.id) {
+    throw new Error(`Message ID is required`);
+  }
   const attachmentNames =
     message.payload?.parts?.filter((part) => part.filename) || [];
   const attachments = [];
@@ -106,11 +111,16 @@ export async function getAttachmentsForMessage(
     }
     const attachmentData = await gmail.users.messages.attachments.get({
       userId: "me",
-      messageId: message.id as string,
+      messageId: message.id,
       id: attachmentId,
     });
     const data = attachmentData.data.data;
-    const filename = attachmentName.filename as string;
+    const filename = attachmentName.filename;
+    if (!data || !filename) {
+      console.warn(`Attachment ${filename} is missing data`);
+      continue;
+    }
+
     attachments.push({
       filename,
       body: data,

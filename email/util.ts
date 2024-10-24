@@ -1,6 +1,12 @@
 import { Prisma } from "@prisma/client";
-import { TicketData, TicketProductRow } from "./types";
+import type {
+  ProductWithPurchase,
+  TicketData,
+  TicketProductRow,
+  TimeSeriesData,
+} from "./types";
 import { getProductsFromTicket, getTicketDateFromPdf } from "./lib/pdf";
+import type { gmail_v1 } from "googleapis";
 
 export function getDateFromTicketLine(line: string): Date | null {
   // Match the line using regex to extract the date
@@ -39,7 +45,7 @@ export function getProductFromTicketLine(
     : parseFloat(match[3].replace(",", "."));
   const pricePerUnit = match[4]
     ? parseFloat(match[3].replace(",", "."))
-    : undefined ?? parseFloat((priceTotal / quantity).toFixed(2));
+    : parseFloat((priceTotal / quantity).toFixed(2));
 
   return {
     quantity,
@@ -58,7 +64,7 @@ export function mapTicketDataToShoppingCartCreationInput(
     Purchase: {
       create: ticketData.products.map((product) => ({
         quantity: product.quantity,
-        price: product.priceTotal,
+        price: product.pricePerUnit,
         Product: {
           connectOrCreate: {
             create: {
@@ -93,5 +99,65 @@ export function getTicketDataFromPdfContent(pdfContent: string): TicketData {
   const date = getTicketDateFromPdf(pdfContent);
   const id = getTicketIdFromPdf(pdfContent);
 
+  if (!date) {
+    throw new Error("Invalid PDF");
+  }
+
   return { id, date, products };
+}
+
+function getPriceForProductForDay(product: ProductWithPurchase, date: Date) {
+  return (
+    product.Purchase.find(
+      (purchase) =>
+        new Date(purchase.ShoppingCart.date).toDateString() ===
+        date.toDateString()
+    )?.price || null
+  );
+}
+
+export function buildTimeSeriesForProducts(
+  products: ProductWithPurchase[]
+): TimeSeriesData {
+  const labels = [
+    ...new Set(
+      products
+        .map((product) =>
+          product.Purchase.map(
+            (purchase) => new Date(purchase.ShoppingCart.date)
+          )
+        )
+        .flat()
+        .sort((a, b) => a.getTime() - b.getTime())
+        .map((date) => date.toDateString()) || []
+    ),
+  ];
+
+  const datasets = products.map((product) => ({
+    label: product.name,
+    data: labels.map((date) =>
+      getPriceForProductForDay(product, new Date(date))
+    ),
+    fill: false,
+    borderColor: `#${Math.floor(Math.random() * 16777215).toString(16)}`,
+    tension: 0.1,
+    spanGaps: false,
+  }));
+
+  return { labels, datasets };
+}
+
+export function getSenderFromEmailHeaders(headers: gmail_v1.Schema$MessagePartHeader[]) {
+  const MERCADONA_ADDRESS = 'ticket_digital@mail.mercadona.com'
+
+  const fromHeader = headers.find((header) => header.name === "From");
+  const toHeader = headers.find((header) => header.name === "To");
+
+  const targetAddress = fromHeader?.value?.includes(MERCADONA_ADDRESS) ? toHeader?.value : fromHeader?.value;
+  const isEmailAddress = !targetAddress?.includes("<")
+
+  if (isEmailAddress) {
+    return targetAddress || null;
+  }
+  return targetAddress?.split("<")?.[1]?.replace(">", "") || null;
 }
