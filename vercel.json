@@ -2,7 +2,7 @@
   "crons": [
     {
       "path": "/email/index.ts",
-      "schedule": "0 * * * *"
+      "schedule": "0 0 * * *"
     }
   ]
 }
