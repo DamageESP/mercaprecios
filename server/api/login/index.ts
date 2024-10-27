@@ -28,12 +28,13 @@ export default defineEventHandler(async (event) => {
   }
 
   // Send a magic link with Supabase
-  const supabase = createClient(process.env.SUPABASE_URL ?? '', process.env.SUPABASE_ANON_KEY ?? '');
+  const env = useRuntimeConfig();
+  const supabase = createClient(env.supabaseUrl, env.supabaseKey);
   await supabase.auth.signInWithOtp({
     email,
     options: {
-      emailRedirectTo: 'http://localhost:3000/login/verify',
-    }
+      emailRedirectTo: "http://localhost:3000/login/verify",
+    },
   });
 
   return "ok";

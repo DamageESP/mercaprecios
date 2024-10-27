@@ -16,8 +16,8 @@ export default defineNuxtConfig({
 
   // Inject env variables to the client
   runtimeConfig: {
-    supabaseUrl: process.env.SUPABASE_URL,
-    supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
+    supabaseUrl: process.env.NUXT_SUPABASE_URL,
+    supabaseKey: process.env.NUXT_SUPABASE_KEY,
   },
 
   ssr: false,
@@ -45,6 +45,6 @@ export default defineNuxtConfig({
   supabase: {
     // Do not redirect the user to /login if not authenticated
     // (allow the user to navigate freely, auth will be checked on the specific pages)
-    redirect: false
-  }
+    redirect: false,
+  },
 });
