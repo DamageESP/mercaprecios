@@ -7,7 +7,7 @@ const supabase = useSupabaseClient();
 const user = useSupabaseUser();
 const router = useRouter();
 const {
-  public: { publicUrl },
+  public: { url },
 } = useRuntimeConfig();
 
 async function doLogin() {
@@ -15,7 +15,7 @@ async function doLogin() {
   const { error } = await supabase.auth.signInWithOtp({
     email: email.value,
     options: {
-      emailRedirectTo: `${publicUrl}/dashboard`,
+      emailRedirectTo: `${url}/dashboard`,
     },
   });
   if (error) {
