@@ -38,10 +38,14 @@ function doLogout() {
               Salir
             </button>
           </div>
-          <div class="indie-flower-bold flex items-center">
+          <a
+            href="https://github.com/DamageESP/mercaprecios"
+            target="_blank"
+            class="indie-flower-bold flex items-center"
+          >
             <i class="icon-github me-2"></i>
             <span>Github</span>
-          </div>
+          </a>
         </div>
       </div>
     </nav>
