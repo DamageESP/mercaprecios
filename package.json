@@ -14,7 +14,7 @@
   "dependencies": {
     "@nuxtjs/supabase": "^1.4.5",
     "@nuxtjs/tailwindcss": "^6.12.2",
-    "@prisma/client": "^5.22.0",
+    "@prisma/client": "^6.1.0",
     "@supabase/supabase-js": "^2.47.10",
     "chart.js": "^4.4.7",
     "express": "^4.21.2",
@@ -30,7 +30,7 @@
     "@types/node": "^20.17.10",
     "@types/pdf-parse": "^1.1.4",
     "jest": "^29.7.0",
-    "prisma": "^5.22.0",
+    "prisma": "^6.1.0",
     "sass-embedded": "^1.83.0"
   }
 }

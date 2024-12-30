@@ -22,5 +22,3 @@ export async function crawlEmail(): Promise<void> {
     console.error(e);
   }
 }
-
-await crawlEmail();

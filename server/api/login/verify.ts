@@ -16,8 +16,8 @@ export default defineEventHandler(async (event) => {
   }
 
   // Generate a JWT for the user
-  const env = useRuntimeConfig();
-  const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_KEY!);
+  const env = useRuntimeConfig(event);
+  const supabase = createClient(env.supabaseUrl, env.supabaseKey);
   await supabase.auth.verifyOtp({ token_hash, type });
 
   return "ok";

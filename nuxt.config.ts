@@ -13,6 +13,16 @@ export default defineNuxtConfig({
 
   // Add a main.scss file in the assets directory
   css: ["~/assets/main.scss", "~/assets/icons.scss"],
+
+  // Inject env variables to the client
+  runtimeConfig: {
+    supabaseUrl: process.env.SUPABASE_URL,
+    supabaseKey: process.env.SUPABASE_KEY,
+    public: {
+      url: process.env.NUXT_PUBLIC_URL,
+    }
+  },
+
   ssr: false,
 
   // Add link styles to head of the app
