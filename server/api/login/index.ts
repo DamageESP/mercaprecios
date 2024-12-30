@@ -28,8 +28,7 @@ export default defineEventHandler(async (event) => {
   }
 
   // Send a magic link with Supabase
-  const env = useRuntimeConfig();
-  const supabase = createClient(env.supabaseUrl, env.supabaseKey);
+  const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_KEY!);
   await supabase.auth.signInWithOtp({
     email,
     options: {
