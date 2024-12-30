@@ -1,12 +1,26 @@
 import { gmail_v1 } from "googleapis";
-import { getRawPdfContentsFromMessage } from "./pdf";
+import { getProductsFromTicket, getRawPdfContentsFromMessage, getTicketDateFromPdf } from "./pdf";
 import {
   getSenderFromEmailHeaders,
-  getTicketDataFromPdfContent,
+  getTicketIdFromPdf,
   mapTicketDataToShoppingCartCreationInput,
 } from "../util";
 import { createShoppingCart } from "../db";
 import { moveMessageToProcessedInbox } from "./google";
+import type { TicketData } from "../types";
+
+
+export function getTicketDataFromPdfContent(pdfContent: string): TicketData {
+  const products = getProductsFromTicket(pdfContent);
+  const date = getTicketDateFromPdf(pdfContent);
+  const id = getTicketIdFromPdf(pdfContent);
+
+  if (!date) {
+    throw new Error("Invalid PDF");
+  }
+
+  return { id, date, products };
+}
 
 export async function extractDataFromMessage(message: gmail_v1.Schema$Message) {
   if (!message?.id) {

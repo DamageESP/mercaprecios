@@ -5,7 +5,6 @@ import type {
   TicketProductRow,
   TimeSeriesData,
 } from "./types";
-import { getProductsFromTicket, getTicketDateFromPdf } from "./lib/pdf";
 import type { gmail_v1 } from "googleapis";
 
 export function getDateFromTicketLine(line: string): Date | null {
@@ -92,18 +91,6 @@ export function getTicketIdFromPdf(pdfData: string): string {
   }
   const ticketId = ticketIdLine.split(":")[1].trim();
   return ticketId;
-}
-
-export function getTicketDataFromPdfContent(pdfContent: string): TicketData {
-  const products = getProductsFromTicket(pdfContent);
-  const date = getTicketDateFromPdf(pdfContent);
-  const id = getTicketIdFromPdf(pdfContent);
-
-  if (!date) {
-    throw new Error("Invalid PDF");
-  }
-
-  return { id, date, products };
 }
 
 function getPriceForProductForDay(product: ProductWithPurchase, date: Date) {
